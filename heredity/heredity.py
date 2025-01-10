@@ -165,6 +165,7 @@ def joint_probability(people, one_gene, two_genes, have_trait):
             else:
                 probability*= (percentages[mother]) * (1-percentages[father])+(1-percentages[mother]) * (percentages[father])
 
+
     return probability
 
 
@@ -176,7 +177,13 @@ def update(probabilities, one_gene, two_genes, have_trait, p):
     Which value for each distribution is updated depends on whether
     the person is in `have_gene` and `have_trait`, respectively.
     """
-    raise NotImplementedError
+    for person in probabilities:
+        genecount = 2 if person in two_genes else 1 if person in one_gene else 0
+        probabilities[person]['gene'][genecount] += p
+        probabilities[person]['trait'][person in have_trait]+=p
+
+    return probabilities
+
 
 
 def normalize(probabilities):
@@ -184,8 +191,13 @@ def normalize(probabilities):
     Update `probabilities` such that each probability distribution
     is normalized (i.e., sums to 1, with relative proportions the same).
     """
-    print(probabilities)
-    raise NotImplementedError
+    new = probabilities.copy()
+    for person in new:
+        for category in new[person]:
+            summ = sum(new[person][category].values())
+            for item in new[person][category]:
+                new[person][category][item] /= summ
+    return new
 
 
 if __name__ == "__main__":
